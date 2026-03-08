@@ -5,7 +5,7 @@ Lokale KI-Services fuer macip.de. Laeuft auf dem Mac Laptop und stellt KI-Generi
 ## Architektur
 
 ```
-macip.de (192.168.1.28)          Mac Laptop (192.168.1.114)
+macip.de (Web-Server)            Mac Laptop (LAN)
 ┌──────────────────────┐         ┌──────────────────────────┐
 │  Blog-Editor         │         │  local-ai :3100          │
 │  share-x Route ──────┼──HTTP──►│  /api/health             │
