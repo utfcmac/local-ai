@@ -4,12 +4,16 @@ import fs from "fs";
 
 // ----- Types -----
 
+export type GenerationType = "teaser" | "image";
+
 export interface GenerationRow {
   id: number;
   blog_post_id: string | null;
   title: string;
+  type: GenerationType;
   main_tweet: string | null;
   reply_tweet: string | null;
+  tagline: string | null;
   model: string;
   duration_ms: number | null;
   status: "pending" | "success" | "error";
@@ -43,8 +47,10 @@ function getDb(): Database.Database {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       blog_post_id TEXT,
       title TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'teaser',
       main_tweet TEXT,
       reply_tweet TEXT,
+      tagline TEXT,
       model TEXT NOT NULL DEFAULT 'qwen2.5:7b',
       duration_ms INTEGER,
       status TEXT NOT NULL DEFAULT 'pending',
@@ -52,6 +58,16 @@ function getDb(): Database.Database {
       created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
     )
   `);
+
+  // Migrationen fuer bestehende DBs
+  const cols = _db.prepare("PRAGMA table_info(generations)").all() as { name: string }[];
+  const colNames = cols.map((c) => c.name);
+  if (!colNames.includes("type")) {
+    _db.exec("ALTER TABLE generations ADD COLUMN type TEXT NOT NULL DEFAULT 'teaser'");
+  }
+  if (!colNames.includes("tagline")) {
+    _db.exec("ALTER TABLE generations ADD COLUMN tagline TEXT");
+  }
 
   return _db;
 }
@@ -61,16 +77,18 @@ function getDb(): Database.Database {
 export function insertGeneration(data: {
   blogPostId?: string | null;
   title: string;
+  type?: GenerationType;
   model?: string;
 }): number {
   const db = getDb();
   const stmt = db.prepare(`
-    INSERT INTO generations (blog_post_id, title, model)
-    VALUES (?, ?, ?)
+    INSERT INTO generations (blog_post_id, title, type, model)
+    VALUES (?, ?, ?, ?)
   `);
   const result = stmt.run(
     data.blogPostId ?? null,
     data.title,
+    data.type ?? "teaser",
     data.model ?? "qwen2.5:7b",
   );
   return Number(result.lastInsertRowid);
@@ -81,6 +99,7 @@ export function updateGeneration(
   data: {
     mainTweet?: string;
     replyTweet?: string;
+    tagline?: string;
     durationMs?: number;
     status: "success" | "error";
     error?: string;
@@ -89,12 +108,13 @@ export function updateGeneration(
   const db = getDb();
   const stmt = db.prepare(`
     UPDATE generations
-    SET main_tweet = ?, reply_tweet = ?, duration_ms = ?, status = ?, error = ?
+    SET main_tweet = ?, reply_tweet = ?, tagline = ?, duration_ms = ?, status = ?, error = ?
     WHERE id = ?
   `);
   stmt.run(
     data.mainTweet ?? null,
     data.replyTweet ?? null,
+    data.tagline ?? null,
     data.durationMs ?? null,
     data.status,
     data.error ?? null,

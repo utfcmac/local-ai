@@ -10,6 +10,7 @@ macip.de (Web-Server)            Mac Laptop (LAN)
 │  Blog-Editor         │         │  local-ai :3100          │
 │  share-x Route ──────┼──HTTP──►│  /api/health             │
 │  teaser-worker ──────┼──HTTP──►│  /api/generate           │
+│  og-image ───────────┼──HTTP──►│  /api/generate-image     │
 │                      │         │                          │
 │  Supabase DB         │         │  Ollama :11434           │
 │  (blog_posts)        │         │  qwen2.5:7b              │
@@ -17,11 +18,17 @@ macip.de (Web-Server)            Mac Laptop (LAN)
 └──────────────────────┘         └──────────────────────────┘
 ```
 
-**Flow:**
+**Teaser-Flow:**
 1. User klickt "Teaser generieren" auf macip.de
 2. Server prueft Mac-Erreichbarkeit (Health-Check, 5s Timeout)
 3. Mac erreichbar → synchrone Generierung → Ergebnis sofort
 4. Mac nicht erreichbar → Queue in Supabase → teaser-worker pollt alle 2 Min
+
+**Image-Flow:**
+1. User klickt "Teaserbild generieren" auf macip.de
+2. Ollama generiert kreative Tagline aus Blog-Inhalt
+3. next/og rendert 1200×630 OG-Image (PNG) mit Titel + Tagline + Branding
+4. PNG wird direkt als Response zurueckgegeben
 
 ## Stack
 
@@ -114,6 +121,33 @@ curl -X POST http://localhost:3100/api/generate \
 }
 ```
 
+### `POST /api/generate-image`
+
+Auth via `x-api-key` Header. Generiert ein OG-Teaserbild (1200×630 PNG) mit KI-Tagline.
+
+```bash
+curl -X POST http://localhost:3100/api/generate-image \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: <dein-key>" \
+  -d '{
+    "title": "Mein Blog-Titel",
+    "excerpt": "Kurzbeschreibung",
+    "content": "Voller MDX-Content...",
+    "blogPostId": "uuid-optional"
+  }' \
+  --output teaserbild.png
+```
+
+**Response:** PNG-Bild direkt (`Content-Type: image/png`, 1200×630).
+
+Bei Fehler: JSON mit `{ "success": false, "error": "..." }`.
+
+Das Bild enthalt:
+- Blog-Titel (gross, weiss)
+- KI-generierte Tagline (Ollama, max 80 Zeichen)
+- Farbverlauf-Hintergrund (dunkel, passend zum Blog)
+- macip.de Branding
+
 ## Dashboard
 
 Das Dashboard ist unter `http://localhost:3100` erreichbar und zeigt:
@@ -137,18 +171,20 @@ Das Modell wird **nicht** manuell gestartet/gestoppt. Stattdessen:
 
 Alle Generierungen werden in `data/generations.db` geloggt:
 
-| Spalte         | Typ     | Beschreibung                    |
-|----------------|---------|---------------------------------|
-| `id`           | INTEGER | Primaerschluessel               |
-| `blog_post_id` | TEXT    | macip.de Blog-Post UUID         |
-| `title`        | TEXT    | Blog-Titel                      |
-| `main_tweet`   | TEXT    | Generierter Haupt-Tweet         |
-| `reply_tweet`  | TEXT    | Generierter Antwort-Tweet       |
-| `model`        | TEXT    | Verwendetes Modell              |
-| `duration_ms`  | INTEGER | Generierungsdauer in ms         |
-| `status`       | TEXT    | `pending` / `success` / `error` |
-| `error`        | TEXT    | Fehlermeldung (bei Fehler)      |
-| `created_at`   | TEXT    | Zeitstempel                     |
+| Spalte         | Typ     | Beschreibung                       |
+|----------------|---------|------------------------------------|
+| `id`           | INTEGER | Primaerschluessel                  |
+| `blog_post_id` | TEXT    | macip.de Blog-Post UUID            |
+| `title`        | TEXT    | Blog-Titel                         |
+| `type`         | TEXT    | `teaser` oder `image`              |
+| `main_tweet`   | TEXT    | Generierter Haupt-Tweet (Teaser)   |
+| `reply_tweet`  | TEXT    | Generierter Antwort-Tweet (Teaser) |
+| `tagline`      | TEXT    | KI-generierte Tagline (Image)      |
+| `model`        | TEXT    | Verwendetes Modell                 |
+| `duration_ms`  | INTEGER | Generierungsdauer in ms            |
+| `status`       | TEXT    | `pending` / `success` / `error`    |
+| `error`        | TEXT    | Fehlermeldung (bei Fehler)         |
+| `created_at`   | TEXT    | Zeitstempel                        |
 
 ## PM2-Befehle
 
@@ -183,9 +219,11 @@ local-ai/
     │   ├── page.tsx           # Dashboard
     │   └── api/
     │       ├── health/
-    │       │   └── route.ts   # GET: Ollama-Status
-    │       └── generate/
-    │           └── route.ts   # POST: Teaser generieren
+    │       │   └── route.ts       # GET: Ollama-Status
+    │       ├── generate/
+    │       │   └── route.ts       # POST: Teaser generieren
+    │       └── generate-image/
+    │           └── route.tsx      # POST: OG-Teaserbild generieren
     └── lib/
         ├── auth.ts            # API-Key Validierung
         ├── db.ts              # SQLite (better-sqlite3)

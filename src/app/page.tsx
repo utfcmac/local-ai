@@ -106,6 +106,15 @@ export default async function DashboardPage() {
                   <div className="flex items-center gap-2">
                     <span
                       className={`inline-block rounded-full border px-2 py-0.5 text-[11px] ${
+                        gen.type === "image"
+                          ? "border-purple-500/20 bg-purple-500/15 text-purple-400"
+                          : "border-accent-blue/20 bg-accent-blue/15 text-accent-blue"
+                      }`}
+                    >
+                      {gen.type === "image" ? "Bild" : "Teaser"}
+                    </span>
+                    <span
+                      className={`inline-block rounded-full border px-2 py-0.5 text-[11px] ${
                         gen.status === "success"
                           ? "border-accent-teal/20 bg-accent-teal/15 text-accent-teal"
                           : gen.status === "error"
@@ -134,7 +143,18 @@ export default async function DashboardPage() {
                   {gen.title}
                 </p>
 
-                {gen.status === "success" && gen.main_tweet && (
+                {gen.status === "success" && gen.type === "image" && gen.tagline && (
+                  <div className="space-y-1.5">
+                    <div className="rounded-md bg-surface p-2.5">
+                      <p className="text-[11px] text-text-dim">Tagline:</p>
+                      <p className="mt-0.5 text-xs text-text-body">
+                        {gen.tagline}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {gen.status === "success" && gen.type !== "image" && gen.main_tweet && (
                   <div className="space-y-1.5">
                     <div className="rounded-md bg-surface p-2.5">
                       <p className="text-[11px] text-text-dim">Haupt-Tweet:</p>
