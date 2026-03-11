@@ -1,9 +1,7 @@
 # local-ai
 
-<p align="center">
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.md">English</a>
-</p>
+[![en](https://img.shields.io/badge/lang-en-red.svg)](README.md)
+[![de](https://img.shields.io/badge/lang-de-blue.svg)](README.de.md)
 
 ---
 
