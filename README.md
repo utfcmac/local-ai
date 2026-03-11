@@ -1,8 +1,15 @@
 # local-ai
 
-Lokale KI-Services fuer macip.de. Laeuft auf dem Mac Laptop und stellt KI-Generierung via Ollama (qwen2.5:7b) bereit.
+<p align="center">
+  <a href="README.de.md">Deutsch</a> |
+  <a href="README.md">English</a>
+</p>
 
-## Architektur
+---
+
+Local AI services for macip.de. Runs on Mac Laptop and provides AI generation via Ollama (qwen2.5:7b).
+
+## Architecture
 
 ```
 macip.de (Web-Server)            Mac Laptop (LAN)
@@ -19,61 +26,61 @@ macip.de (Web-Server)            Mac Laptop (LAN)
 ```
 
 **Teaser-Flow:**
-1. User klickt "Teaser generieren" auf macip.de
-2. Server prueft Mac-Erreichbarkeit (Health-Check, 5s Timeout)
-3. Mac erreichbar → synchrone Generierung → Ergebnis sofort
-4. Mac nicht erreichbar → Queue in Supabase → teaser-worker pollt alle 2 Min
+1. User clicks "Generate Teaser" on macip.de
+2. Server checks Mac reachability (Health-Check, 5s Timeout)
+3. Mac reachable → synchronous generation → immediate result
+4. Mac not reachable → Queue in Supabase → teaser-worker polls every 2 min
 
 **Image-Flow:**
-1. User klickt "Teaserbild generieren" auf macip.de
-2. Ollama generiert kreative Tagline aus Blog-Inhalt
-3. next/og rendert 1200×630 OG-Image (PNG) mit Titel + Tagline + Branding
-4. PNG wird direkt als Response zurueckgegeben
+1. User clicks "Generate Teaser Image" on macip.de
+2. Ollama generates creative tagline from blog content
+3. next/og renders 1200×630 OG-Image (PNG) with title + tagline + branding
+4. PNG is returned directly as response
 
 ## Stack
 
-| Bereich    | Technologie                    |
-|------------|--------------------------------|
-| Framework  | Next.js 16 (App Router)        |
-| Sprache    | TypeScript                     |
-| LLM        | Ollama (qwen2.5:7b)            |
-| Datenbank  | SQLite (better-sqlite3)        |
-| Styling    | Tailwind CSS v4 (Dark-only)    |
-| Prozess    | PM2 (Standalone Build)         |
+| Area       | Technology                      |
+|------------|---------------------------------|
+| Framework  | Next.js 16 (App Router)         |
+| Language   | TypeScript                      |
+| LLM        | Ollama (qwen2.5:7b)             |
+| Database   | SQLite (better-sqlite3)         |
+| Styling    | Tailwind CSS v4 (Dark-only)     |
+| Process    | PM2 (Standalone Build)          |
 
-## Voraussetzungen
+## Prerequisites
 
 - Node.js 22+
-- Ollama installiert und als Daemon laufend (`brew services start ollama`)
-- Modell geladen: `ollama pull qwen2.5:7b`
+- Ollama installed and running as daemon (`brew services start ollama`)
+- Model loaded: `ollama pull qwen2.5:7b`
 
 ## Setup
 
 ```bash
-# 1. Dependencies installieren
+# 1. Install dependencies
 npm install
 
-# 2. API-Key konfigurieren (gleicher Key wie auf macip.de Server)
-echo 'LOCAL_AI_API_KEY=<dein-shared-key>' > .env.local
+# 2. Configure API-Key (same key as on macip.de server)
+echo 'LOCAL_AI_API_KEY=<your-shared-key>' > .env.local
 
-# 3. Bauen
+# 3. Build
 npm run build
 
-# 4. Mit PM2 starten (Env-Vars muessen vorher geladen sein!)
+# 4. Start with PM2 (Env-Vars must be loaded beforehand!)
 set -a && source .env.local && set +a
 pm2 start ecosystem.config.cjs
 pm2 save
 
-# 5. Autostart nach Reboot einrichten
+# 5. Set up autostart after reboot
 pm2 startup
-# → Angezeigten sudo-Befehl ausfuehren
+# → Execute the displayed sudo command
 ```
 
 ## API-Endpoints
 
 ### `GET /api/health`
 
-Kein Auth erforderlich. Prueft Ollama-Status.
+No auth required. Checks Ollama status.
 
 ```bash
 curl http://localhost:3100/api/health
@@ -95,17 +102,17 @@ curl http://localhost:3100/api/health
 
 ### `POST /api/generate`
 
-Auth via `x-api-key` Header.
+Auth via `x-api-key` header.
 
 ```bash
 curl -X POST http://localhost:3100/api/generate \
   -H "Content-Type: application/json" \
-  -H "x-api-key: <dein-key>" \
+  -H "x-api-key: <your-key>" \
   -d '{
-    "title": "Mein Blog-Titel",
-    "excerpt": "Kurzbeschreibung",
-    "content": "Voller MDX-Content...",
-    "blogUrl": "https://www.macip.de/blog/mein-slug",
+    "title": "My Blog Title",
+    "excerpt": "Short description",
+    "content": "Full MDX-Content...",
+    "blogUrl": "https://www.macip.de/blog/my-slug",
     "blogPostId": "uuid-optional"
   }'
 ```
@@ -114,8 +121,8 @@ curl -X POST http://localhost:3100/api/generate \
 ```json
 {
   "success": true,
-  "mainTweet": "Spannender Teaser-Text (max 280 Zeichen)",
-  "replyTweet": "Ergaenzender Gedanke (max 255 Zeichen)",
+  "mainTweet": "Exciting teaser text (max 280 chars)",
+  "replyTweet": "Additional thought (max 255 chars)",
   "durationMs": 7500,
   "model": "qwen2.5:7b"
 }
@@ -123,109 +130,109 @@ curl -X POST http://localhost:3100/api/generate \
 
 ### `POST /api/generate-image`
 
-Auth via `x-api-key` Header. Generiert ein OG-Teaserbild (1200×630 PNG) mit KI-Tagline.
+Auth via `x-api-key` header. Generates an OG teaser image (1200×630 PNG) with AI tagline.
 
 ```bash
 curl -X POST http://localhost:3100/api/generate-image \
   -H "Content-Type: application/json" \
-  -H "x-api-key: <dein-key>" \
+  -H "x-api-key: <your-key>" \
   -d '{
-    "title": "Mein Blog-Titel",
-    "excerpt": "Kurzbeschreibung",
-    "content": "Voller MDX-Content...",
+    "title": "My Blog Title",
+    "excerpt": "Short description",
+    "content": "Full MDX-Content...",
     "blogPostId": "uuid-optional"
   }' \
-  --output teaserbild.png
+  --output teaser-image.png
 ```
 
-**Response:** PNG-Bild direkt (`Content-Type: image/png`, 1200×630).
+**Response:** PNG image directly (`Content-Type: image/png`, 1200×630).
 
-Bei Fehler: JSON mit `{ "success": false, "error": "..." }`.
+On error: JSON with `{ "success": false, "error": "..." }`.
 
-Das Bild enthalt:
-- Blog-Titel (gross, weiss)
-- KI-generierte Tagline (Ollama, max 80 Zeichen)
-- Farbverlauf-Hintergrund (dunkel, passend zum Blog)
-- macip.de Branding
+The image contains:
+- Blog title (large, white)
+- AI-generated tagline (Ollama, max 80 chars)
+- Gradient background (dark, matching the blog)
+- macip.de branding
 
 ## Dashboard
 
-Das Dashboard ist unter `http://localhost:3100` erreichbar und zeigt:
+The dashboard is accessible at `http://localhost:3100` and shows:
 
-- Ollama-Status (laeuft/gestoppt)
-- Modell geladen/entladen (RAM-Nutzung)
-- System-RAM-Anzeige
-- Generierungs-Statistiken (Erfolg/Fehler/Durchschnittsdauer)
-- Tabelle der letzten 20 Generierungen
+- Ollama status (running/stopped)
+- Model loaded/unloaded (RAM usage)
+- System RAM display
+- Generation statistics (success/error/avg duration)
+- Table of the last 20 generations
 
-## Ollama RAM-Management
+## Ollama RAM Management
 
-Das Modell wird **nicht** manuell gestartet/gestoppt. Stattdessen:
+The model is **not** manually started/stopped. Instead:
 
-- `keep_alive: "5m"` pro Request → Modell entlaedt sich nach 5 Min Inaktivitaet automatisch
-- Ollama laeuft dauerhaft als Daemon (`brew services start ollama`)
-- Bei einem Request wird das Modell automatisch in den RAM geladen (~4.7 GB)
-- Dashboard zeigt ob Modell gerade geladen ist
+- `keep_alive: "5m"` per request → model unloads automatically after 5 min of inactivity
+- Ollama runs permanently as daemon (`brew services start ollama`)
+- Upon a request, the model is automatically loaded into RAM (~4.7 GB)
+- Dashboard shows if model is currently loaded
 
-## SQLite-Datenbank
+## SQLite Database
 
-Alle Generierungen werden in `data/generations.db` geloggt:
+All generations are logged in `data/generations.db`:
 
-| Spalte         | Typ     | Beschreibung                       |
+| Column         | Type    | Description                        |
 |----------------|---------|------------------------------------|
-| `id`           | INTEGER | Primaerschluessel                  |
+| `id`           | INTEGER | Primary Key                        |
 | `blog_post_id` | TEXT    | macip.de Blog-Post UUID            |
-| `title`        | TEXT    | Blog-Titel                         |
-| `type`         | TEXT    | `teaser` oder `image`              |
-| `main_tweet`   | TEXT    | Generierter Haupt-Tweet (Teaser)   |
-| `reply_tweet`  | TEXT    | Generierter Antwort-Tweet (Teaser) |
-| `tagline`      | TEXT    | KI-generierte Tagline (Image)      |
-| `model`        | TEXT    | Verwendetes Modell                 |
-| `duration_ms`  | INTEGER | Generierungsdauer in ms            |
+| `title`        | TEXT    | Blog Title                         |
+| `type`         | TEXT    | `teaser` or `image`                |
+| `main_tweet`   | TEXT    | Generated Main Tweet (Teaser)      |
+| `reply_tweet`  | TEXT    | Generated Reply Tweet (Teaser)     |
+| `tagline`      | TEXT    | AI-generated Tagline (Image)       |
+| `model`        | TEXT    | Used Model                         |
+| `duration_ms`  | INTEGER | Generation duration in ms          |
 | `status`       | TEXT    | `pending` / `success` / `error`    |
-| `error`        | TEXT    | Fehlermeldung (bei Fehler)         |
-| `created_at`   | TEXT    | Zeitstempel                        |
+| `error`        | TEXT    | Error message (on failure)         |
+| `created_at`   | TEXT    | Timestamp                          |
 
-## PM2-Befehle
-
-```bash
-pm2 status                    # Alle Prozesse anzeigen
-pm2 logs local-ai             # Live-Logs
-pm2 restart local-ai          # Neustart
-pm2 stop local-ai             # Stoppen
-pm2 delete local-ai           # Entfernen
-```
-
-## Entwicklung
+## PM2 Commands
 
 ```bash
-npm run dev                   # Dev-Server auf Port 3100
+pm2 status                    # Show all processes
+pm2 logs local-ai             # Live logs
+pm2 restart local-ai          # Restart
+pm2 stop local-ai             # Stop
+pm2 delete local-ai           # Remove
 ```
 
-## Dateistruktur
+## Development
+
+```bash
+npm run dev                   # Dev server on port 3100
+```
+
+## File Structure
 
 ```
 local-ai/
 ├── package.json
 ├── next.config.ts             # output: "standalone"
-├── ecosystem.config.cjs       # PM2-Konfiguration
+├── ecosystem.config.cjs       # PM2 configuration
 ├── .env.local                 # LOCAL_AI_API_KEY
 ├── data/                      # SQLite DB (gitignored)
 │   └── generations.db
 └── src/
     ├── app/
-    │   ├── globals.css        # Dark-Theme (macip.de Subset)
+    │   ├── globals.css        # Dark theme (macip.de subset)
     │   ├── layout.tsx
     │   ├── page.tsx           # Dashboard
     │   └── api/
     │       ├── health/
-    │       │   └── route.ts       # GET: Ollama-Status
+    │       │   └── route.ts       # GET: Ollama status
     │       ├── generate/
-    │       │   └── route.ts       # POST: Teaser generieren
+    │       │   └── route.ts       # POST: Generate teaser
     │       └── generate-image/
-    │           └── route.tsx      # POST: OG-Teaserbild generieren
+    │           └── route.tsx      # POST: Generate OG teaser image
     └── lib/
-        ├── auth.ts            # API-Key Validierung
+        ├── auth.ts            # API key validation
         ├── db.ts              # SQLite (better-sqlite3)
-        └── ollama.ts          # Ollama API Wrapper
+        └── ollama.ts          # Ollama API wrapper
 ```
