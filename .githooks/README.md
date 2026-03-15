@@ -9,12 +9,20 @@ Runs before every commit and checks:
 
 1. **Unstaged files** - Warns if you have unstaged changes and offers to add them
 2. **Untracked files** - Warns if you have untracked files and offers to add them
-3. **Git user** - Ensures commits are made as `utfcmac`
+3. **Git user** (optional) - Checks git user if environment variables are set
 
 **What it does:**
 - Prevents forgetting to stage files (like release notes)
-- Auto-fixes git user if wrong
+- Optional git user verification for maintainers
 - Interactive prompts for user decisions
+
+**For maintainers:** To enable git user checks, set environment variables:
+```bash
+export GIT_HOOK_USER="your-username"
+export GIT_HOOK_EMAIL="your-email@example.com"
+```
+
+Or create a `.env.githooks` file (already in `.gitignore`) and source it.
 
 ### `commit-msg`
 Runs when you create a commit message and validates:
@@ -61,10 +69,11 @@ git commit --no-verify
 ## Benefits
 
 ✅ **Never forget to stage files** - Hook prompts you
-✅ **Always use correct git user** - Hook auto-fixes
+✅ **Optional git user check** - Maintainers can enable for consistency
 ✅ **Enforce conventional commits** - Hook validates format
 ✅ **Consistent across team** - Everyone gets the same checks
 ✅ **Works for AI agents too** - Prevents AI mistakes
+✅ **Non-intrusive for contributors** - No forced user settings
 
 ## Troubleshooting
 

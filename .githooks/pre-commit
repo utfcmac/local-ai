@@ -42,24 +42,27 @@ if [ -n "$UNTRACKED" ]; then
     fi
 fi
 
-# Verify git user is correct
-GIT_USER=$(git config user.name)
-GIT_EMAIL=$(git config user.email)
+# Verify git user is configured (optional check for maintainers)
+# Skip this check for external contributors
+EXPECTED_USER="${GIT_HOOK_USER:-}"
+EXPECTED_EMAIL="${GIT_HOOK_EMAIL:-}"
 
-if [ "$GIT_USER" != "utfcmac" ] || [ "$GIT_EMAIL" != "utfcmac@users.noreply.github.com" ]; then
-    echo -e "${RED}❌ Error: Wrong git user!${NC}"
-    echo "Current: $GIT_USER <$GIT_EMAIL>"
-    echo "Expected: utfcmac <utfcmac@users.noreply.github.com>"
-    echo ""
-    read -p "Fix git user configuration? [y/N] " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        git config user.name "utfcmac"
-        git config user.email "utfcmac@users.noreply.github.com"
-        echo -e "${GREEN}✅ Git user fixed${NC}"
-    else
-        echo -e "${RED}❌ Commit cancelled${NC}"
-        exit 1
+if [ -n "$EXPECTED_USER" ] && [ -n "$EXPECTED_EMAIL" ]; then
+    GIT_USER=$(git config user.name)
+    GIT_EMAIL=$(git config user.email)
+
+    if [ "$GIT_USER" != "$EXPECTED_USER" ] || [ "$GIT_EMAIL" != "$EXPECTED_EMAIL" ]; then
+        echo -e "${YELLOW}⚠️  Warning: Git user mismatch${NC}"
+        echo "Current: $GIT_USER <$GIT_EMAIL>"
+        echo "Expected: $EXPECTED_USER <$EXPECTED_EMAIL>"
+        echo ""
+        read -p "Fix git user configuration? [y/N] " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            git config user.name "$EXPECTED_USER"
+            git config user.email "$EXPECTED_EMAIL"
+            echo -e "${GREEN}✅ Git user fixed${NC}"
+        fi
     fi
 fi
 

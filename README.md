@@ -449,11 +449,11 @@ If you're an AI agent (Claude Code, Cursor, GitHub Copilot, etc.), please read:
 - **[.clinerules](.clinerules)** - Project-specific rules
 
 **Quick checklist:**
-- Set git user to `utfcmac` before commits
 - Use conventional commit messages
 - Update `CHANGELOG.md` with every change
 - Add i18n for all UI text (de.json + en.json)
 - Test build before pushing
+- Respond to git hook prompts appropriately
 
 ## 📄 License
 
