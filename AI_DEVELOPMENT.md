@@ -1,4 +1,4 @@
-# AI Development Guide for Local AI
+es# AI Development Guide for Local AI
 
 This guide is specifically for AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) working on this project.
 

@@ -2,8 +2,16 @@
 
 ## Git Configuration
 - Always use git user: "utfcmac" with email "utfcmac@users.noreply.github.com"
+- Git hooks are installed automatically and will check/fix this for you
+- If hooks prompt you, respond appropriately to fix issues
 - Before any git operations, verify user config: `git config user.name` and `git config user.email`
 - If user is not "utfcmac", run: `git config user.name "utfcmac" && git config user.email "utfcmac@users.noreply.github.com"`
+
+## Git Hooks (Automated Checks)
+- Pre-commit hook checks for unstaged files - RESPOND TO PROMPTS
+- Pre-commit hook verifies git user - will auto-fix if you confirm
+- Commit-msg hook validates conventional commit format - will reject bad messages
+- To bypass hooks: `git commit --no-verify` (only in emergencies!)
 
 ## Commit Message Convention
 - MUST follow Conventional Commits format: `<type>(<scope>): <subject>`

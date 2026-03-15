@@ -56,7 +56,7 @@ Local AI is a self-hosted, multilingual content generation service that runs on 
 git clone https://github.com/utfcmac/local-ai.git
 cd local-ai
 
-# 2. Install dependencies
+# 2. Install dependencies (automatically sets up Git hooks)
 npm install
 
 # 3. Pull the Ollama model
