@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `npm install` now automatically sets up Git hooks via postinstall script
+- Git hooks user check is now optional via environment variables (maintainer-only)
+- Hook setup script gracefully skips in CI environments
+
+### Fixed
+- GitHub Actions CI no longer fails during `npm ci` (hook setup skipped in CI)
 
 ## [1.1.0] - 2026-03-15
 
