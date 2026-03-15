@@ -11,6 +11,7 @@ interface GenerateRequest {
   content: string;
   blogUrl: string;
   blogPostId?: string;
+  language?: "de" | "en";
 }
 
 export async function POST(request: Request) {
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { title, excerpt, content, blogUrl, blogPostId } = body;
+  const { title, excerpt, content, blogUrl, blogPostId, language = "de" } = body;
 
   if (!title || !content) {
     return NextResponse.json(
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
   const startTime = Date.now();
 
   try {
-    const result = await generateTeaser(title, excerpt ?? "", content, blogUrl ?? "");
+    const result = await generateTeaser(title, excerpt ?? "", content, blogUrl ?? "", language);
     const durationMs = Date.now() - startTime;
 
     updateGeneration(genId, {

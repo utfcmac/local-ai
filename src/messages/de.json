@@ -1,0 +1,40 @@
+{
+  "dashboard": {
+    "title": "Local AI Dashboard",
+    "subtitle": "Lokale KI-Services für macip.de",
+    "ollama": {
+      "title": "Ollama Status",
+      "connected": "Verbunden",
+      "offline": "Offline",
+      "modelLoaded": "qwen2.5:7b geladen",
+      "modelAvailable": "qwen2.5:7b verfügbar",
+      "modelNotInstalled": "qwen2.5:7b nicht installiert"
+    },
+    "memory": {
+      "title": "Speicherverbrauch",
+      "heap": "von {total} MB Heap"
+    },
+    "generations": {
+      "title": "Generierungen",
+      "average": "Ø {duration}s",
+      "noData": "Noch keine Daten"
+    },
+    "history": {
+      "title": "Letzte Generierungen",
+      "subtitle": "Die 20 neuesten KI-Generierungen im Überblick",
+      "empty": "Noch keine Generierungen vorhanden.",
+      "types": {
+        "image": "Bild",
+        "teaser": "Teaser"
+      },
+      "status": {
+        "success": "Erfolgreich",
+        "error": "Fehler",
+        "pending": "Läuft..."
+      },
+      "tagline": "Tagline:",
+      "mainTweet": "Haupt-Tweet:",
+      "reply": "Reply:"
+    }
+  }
+}

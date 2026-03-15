@@ -78,27 +78,42 @@ export async function checkOllamaHealth(): Promise<OllamaHealthInfo> {
 
 // ----- Generation -----
 
-const SYSTEM_PROMPT = `Du bist ein Social-Media-Experte fuer Tech-Inhalte.
+const SYSTEM_PROMPTS = {
+  de: `Du bist ein Social-Media-Experte fuer Tech-Inhalte.
 Du schreibst Tweets auf Deutsch fuer einen Software-Entwickler-Blog.
 Dein Stil: Direkt, neugierig machend, technisch aber zugaenglich.
 Nutze gelegentlich Emojis, aber dezent (max. 1-2 pro Tweet).
 Schreibe IMMER auf Deutsch.
-Antworte IMMER mit validem JSON. Kein Markdown, keine Code-Bloecke, nur JSON.`;
+Antworte IMMER mit validem JSON. Kein Markdown, keine Code-Bloecke, nur JSON.`,
+  en: `You are a social media expert for tech content.
+You write tweets in English for a software developer blog.
+Your style: Direct, intriguing, technical yet accessible.
+Use emojis occasionally, but sparingly (max. 1-2 per tweet).
+ALWAYS write in English.
+ALWAYS respond with valid JSON. No markdown, no code blocks, just JSON.`
+};
 
 // ----- Tagline Generation -----
 
-const TAGLINE_SYSTEM_PROMPT = `Du bist ein kreativer Texter fuer Tech-Blog-Inhalte.
+const TAGLINE_SYSTEM_PROMPTS = {
+  de: `Du bist ein kreativer Texter fuer Tech-Blog-Inhalte.
 Du erstellst kurze, praegnante Taglines auf Deutsch.
-Antworte IMMER mit validem JSON. Kein Markdown, keine Code-Bloecke, nur JSON.`;
+Antworte IMMER mit validem JSON. Kein Markdown, keine Code-Bloecke, nur JSON.`,
+  en: `You are a creative copywriter for tech blog content.
+You create short, concise taglines in English.
+ALWAYS respond with valid JSON. No markdown, no code blocks, just JSON.`
+};
 
 export async function generateTagline(
   title: string,
   excerpt: string,
   content: string,
+  language: "de" | "en" = "de",
 ): Promise<string> {
   const contentPreview = content.slice(0, 1500);
 
-  const userPrompt = `Erstelle eine kreative, kurze Tagline fuer folgenden Blog-Beitrag.
+  const userPrompts = {
+    de: `Erstelle eine kreative, kurze Tagline fuer folgenden Blog-Beitrag.
 Die Tagline soll neugierig machen und den Kern des Artikels einfangen.
 
 Titel: ${title}
@@ -112,7 +127,25 @@ Anforderungen:
 - Praegnant und spannend
 
 Antworte NUR mit validem JSON im Format:
-{"tagline": "..."}`;
+{"tagline": "..."}`,
+    en: `Create a creative, short tagline for the following blog post.
+The tagline should be intriguing and capture the essence of the article.
+
+Title: ${title}
+Summary: ${excerpt}
+Content (excerpt): ${contentPreview}
+
+Requirements:
+- Maximum 80 characters
+- English
+- No link, no URL
+- Concise and exciting
+
+Respond ONLY with valid JSON in the format:
+{"tagline": "..."}`
+  };
+
+  const userPrompt = userPrompts[language];
 
   const res = await fetch(`${OLLAMA_BASE}/api/chat`, {
     method: "POST",
@@ -120,7 +153,7 @@ Antworte NUR mit validem JSON im Format:
     body: JSON.stringify({
       model: MODEL,
       messages: [
-        { role: "system", content: TAGLINE_SYSTEM_PROMPT },
+        { role: "system", content: TAGLINE_SYSTEM_PROMPTS[language] },
         { role: "user", content: userPrompt },
       ],
       format: "json",
@@ -181,10 +214,12 @@ export async function generateTeaser(
   excerpt: string,
   content: string,
   blogUrl: string,
+  language: "de" | "en" = "de",
 ): Promise<TeaserResult> {
   const contentPreview = content.slice(0, 2000);
 
-  const userPrompt = `Erstelle zwei Tweets fuer folgenden Blog-Beitrag:
+  const userPrompts = {
+    de: `Erstelle zwei Tweets fuer folgenden Blog-Beitrag:
 
 Titel: ${title}
 Kurzfassung: ${excerpt}
@@ -195,7 +230,22 @@ Anforderungen:
 2. "replyTweet": Ein ergaenzender Gedanke oder ein konkretes Highlight aus dem Artikel. WICHTIG: Kein Link, keine URL — der Link wird automatisch angehaengt. Maximal 250 Zeichen.
 
 Antworte NUR mit validem JSON im Format:
-{"mainTweet": "...", "replyTweet": "..."}`;
+{"mainTweet": "...", "replyTweet": "..."}`,
+    en: `Create two tweets for the following blog post:
+
+Title: ${title}
+Summary: ${excerpt}
+Content (excerpt): ${contentPreview}
+
+Requirements:
+1. "mainTweet": An exciting teaser that makes people curious and encourages them to read more. IMPORTANT: No link, no URL, no "http", no "macip.de" — the link will be posted separately. Maximum 270 characters.
+2. "replyTweet": A complementary thought or a specific highlight from the article. IMPORTANT: No link, no URL — the link will be added automatically. Maximum 250 characters.
+
+Respond ONLY with valid JSON in the format:
+{"mainTweet": "...", "replyTweet": "..."}`
+  };
+
+  const userPrompt = userPrompts[language];
 
   const res = await fetch(`${OLLAMA_BASE}/api/chat`, {
     method: "POST",
@@ -203,7 +253,7 @@ Antworte NUR mit validem JSON im Format:
     body: JSON.stringify({
       model: MODEL,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: SYSTEM_PROMPTS[language] },
         { role: "user", content: userPrompt },
       ],
       format: "json",

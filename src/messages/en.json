@@ -1,0 +1,40 @@
+{
+  "dashboard": {
+    "title": "Local AI Dashboard",
+    "subtitle": "Local AI services for macip.de",
+    "ollama": {
+      "title": "Ollama Status",
+      "connected": "Connected",
+      "offline": "Offline",
+      "modelLoaded": "qwen2.5:7b loaded",
+      "modelAvailable": "qwen2.5:7b available",
+      "modelNotInstalled": "qwen2.5:7b not installed"
+    },
+    "memory": {
+      "title": "Memory Usage",
+      "heap": "of {total} MB heap"
+    },
+    "generations": {
+      "title": "Generations",
+      "average": "Ø {duration}s",
+      "noData": "No data yet"
+    },
+    "history": {
+      "title": "Recent Generations",
+      "subtitle": "The 20 most recent AI generations",
+      "empty": "No generations yet.",
+      "types": {
+        "image": "Image",
+        "teaser": "Teaser"
+      },
+      "status": {
+        "success": "Success",
+        "error": "Error",
+        "pending": "Running..."
+      },
+      "tagline": "Tagline:",
+      "mainTweet": "Main Tweet:",
+      "reply": "Reply:"
+    }
+  }
+}

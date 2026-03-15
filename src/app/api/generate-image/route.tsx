@@ -11,6 +11,7 @@ interface GenerateImageRequest {
   excerpt?: string;
   content: string;
   blogPostId?: string;
+  language?: "de" | "en";
 }
 
 export async function POST(request: Request) {
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { title, excerpt, content, blogPostId } = body;
+  const { title, excerpt, content, blogPostId, language = "de" } = body;
 
   if (!title || !content) {
     return NextResponse.json(
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
 
   try {
     // Tagline via Ollama generieren
-    const tagline = await generateTagline(title, excerpt ?? "", content);
+    const tagline = await generateTagline(title, excerpt ?? "", content, language);
     const durationMs = Date.now() - startTime;
 
     updateGeneration(genId, {
