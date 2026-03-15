@@ -1,0 +1,74 @@
+# Cursor AI Rules for Local AI Project
+
+## Critical: Git Configuration
+BEFORE any git commit operation:
+```bash
+git config user.name "utfcmac"
+git config user.email "utfcmac@users.noreply.github.com"
+```
+
+## Commit Message Format (MANDATORY)
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+Types: feat, fix, docs, style, refactor, perf, test, chore
+
+Examples:
+- feat(api): add language parameter
+- fix(dashboard): memory display calculation
+- docs(readme): update API examples
+- chore(deps): bump next to v16.2.0
+
+## Every Code Change Checklist
+- [ ] Update CHANGELOG.md under [Unreleased]
+- [ ] Add i18n for new UI text (de.json + en.json)
+- [ ] Test build: npm run build
+- [ ] Use conventional commit message
+- [ ] Verify git user is "utfcmac"
+
+## Release Process
+1. Edit CHANGELOG.md: [Unreleased] → [X.Y.Z] - YYYY-MM-DD
+2. Commit: `git commit -m "chore(release): prepare vX.Y.Z"`
+3. Tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z: description"`
+4. Push: `git push origin main --tags`
+5. GitHub Actions creates release automatically
+
+## Semantic Versioning
+- Breaking change → MAJOR (2.0.0)
+- New feature → MINOR (1.2.0)
+- Bug fix → PATCH (1.1.1)
+
+## Code Standards
+- TypeScript for all new files
+- Use next-intl for all text: t("key")
+- Validate API keys: validateApiKey(request)
+- Log generations: insertGeneration() / updateGeneration()
+- Error format: { success: false, error: "message" }
+
+## i18n Pattern
+When adding UI text:
+1. Use t("section.key") in component
+2. Add to src/messages/de.json
+3. Add to src/messages/en.json
+
+## Testing
+Always run before push:
+```bash
+npm run build
+npm run start:standalone
+# Test at http://localhost:3100
+```
+
+## File Organization
+- API: src/app/api/*/route.ts
+- Pages: src/app/[locale]/*.tsx
+- Components: src/components/*.tsx
+- Utils: src/lib/*.ts
+- i18n: src/messages/*.json
+
+See AI_DEVELOPMENT.md for detailed guidelines.

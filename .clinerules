@@ -1,0 +1,121 @@
+# Cline/Claude Code Rules for Local AI Project
+
+## Git Configuration
+- Always use git user: "utfcmac" with email "utfcmac@users.noreply.github.com"
+- Before any git operations, verify user config: `git config user.name` and `git config user.email`
+- If user is not "utfcmac", run: `git config user.name "utfcmac" && git config user.email "utfcmac@users.noreply.github.com"`
+
+## Commit Message Convention
+- MUST follow Conventional Commits format: `<type>(<scope>): <subject>`
+- Valid types: feat, fix, docs, style, refactor, perf, test, chore
+- Examples:
+  - `feat(api): add language parameter to generate endpoint`
+  - `fix(dashboard): correct memory calculation`
+  - `docs(readme): update installation instructions`
+  - `chore(deps): update next-intl to v4.9.0`
+
+## CHANGELOG Management
+- ALWAYS update CHANGELOG.md when making changes
+- Add changes under `[Unreleased]` section
+- Follow Keep a Changelog format with sections: Added, Changed, Deprecated, Removed, Fixed, Security
+- When creating a release, move `[Unreleased]` content to new version section with date
+
+## Development Workflow
+1. Make code changes
+2. Update CHANGELOG.md under `[Unreleased]`
+3. Test locally: `npm run build && npm run start:standalone`
+4. Commit with conventional commit message
+5. Push to GitHub: `git push origin main`
+
+## Release Workflow
+1. Update CHANGELOG.md: change `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`
+2. Commit: `git commit -m "chore(release): prepare vX.Y.Z"`
+3. Create annotated tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z: Brief description"`
+4. Push with tags: `git push origin main --tags`
+5. GitHub Actions will automatically create the release
+
+## Versioning (Semantic Versioning)
+- MAJOR (X.0.0): Breaking changes (API incompatible changes)
+- MINOR (0.X.0): New features (backward compatible)
+- PATCH (0.0.X): Bug fixes (backward compatible)
+
+## Code Style
+- Use TypeScript for all new files
+- Prefer functional components in React
+- Use async/await over promises
+- Add JSDoc comments for exported functions
+- Keep functions small and focused
+- Use meaningful variable names
+
+## i18n (Internationalization)
+- When adding new UI text, ALWAYS add translations to both:
+  - `src/messages/de.json`
+  - `src/messages/en.json`
+- Use `useTranslations()` in client components
+- Use `getTranslations()` in server components
+
+## API Development
+- Always validate API key with `validateApiKey(request)`
+- Return consistent error format: `{ success: false, error: "message" }`
+- Log all generations to SQLite via `insertGeneration()`
+- Support optional `language` parameter (default: "de")
+
+## Testing Requirements
+- Build must succeed: `npm run build`
+- Test standalone server: `npm run start:standalone`
+- Test API endpoints with curl
+- Verify dashboard at http://localhost:3100
+
+## File Organization
+- API routes: `src/app/api/*/route.ts`
+- Components: `src/components/`
+- UI components: `src/components/ui/` (shadcn/ui)
+- Utilities: `src/lib/`
+- Translations: `src/messages/`
+
+## Documentation
+- Update README.md when adding features or changing APIs
+- Update CONTRIBUTING.md if development workflow changes
+- Add JSDoc comments to complex functions
+
+## Dependencies
+- Use `npm install` (not yarn or pnpm)
+- Update package.json AND package-lock.json
+- Document breaking dependency changes in CHANGELOG
+
+## Build System
+- Never hardcode paths - use dynamic resolution
+- Post-build script automatically copies assets
+- Standalone build must work on any machine/path
+
+## Security
+- Never commit `.env.local` or API keys
+- Validate all API inputs
+- Use API key authentication for protected endpoints
+- Document security changes in CHANGELOG under "Security" section
+
+## When Creating PRs (for external contributors)
+- Fill out PR template completely
+- Link related issues
+- Update CHANGELOG.md
+- Ensure CI passes
+- Use conventional commit messages
+
+## Error Handling
+- Always wrap async operations in try/catch
+- Log errors with context
+- Return user-friendly error messages
+- Update generation status in database on error
+
+## Performance
+- Monitor process memory usage
+- Use dynamic imports where appropriate
+- Optimize database queries
+- Cache Ollama responses when applicable
+
+## Remember
+- Git user MUST be "utfcmac"
+- ALWAYS update CHANGELOG.md
+- ALWAYS use conventional commits
+- ALWAYS test build before pushing
+- Releases are AUTOMATED via tags

@@ -431,11 +431,29 @@ local-ai/
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+### For Human Contributors
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Follow the [Conventional Commits](https://www.conventionalcommits.org/) format
+4. Update `CHANGELOG.md` under `[Unreleased]`
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### For AI Coding Assistants
+
+If you're an AI agent (Claude Code, Cursor, GitHub Copilot, etc.), please read:
+- **[AI_DEVELOPMENT.md](AI_DEVELOPMENT.md)** - Complete workflow guide
+- **[.clinerules](.clinerules)** - Project-specific rules
+
+**Quick checklist:**
+- Set git user to `utfcmac` before commits
+- Use conventional commit messages
+- Update `CHANGELOG.md` with every change
+- Add i18n for all UI text (de.json + en.json)
+- Test build before pushing
 
 ## 📄 License
 
