@@ -7,23 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-03-15
+
 ### Added
 - **Git Hooks**: Automated pre-commit and commit-msg hooks
-  - Pre-commit: Warns about unstaged files and wrong git user
+  - Pre-commit: Warns about unstaged files and optional git user check
   - Commit-msg: Validates conventional commit format
   - Auto-installed on `npm install`
 - **AI Development Guidelines**: Comprehensive workflow documentation
   - `.clinerules` for Cline/Claude Code
   - `.cursorrules` for Cursor AI
   - `AI_DEVELOPMENT.md` with decision trees and patterns
+- **Maintainer Documentation**:
+  - `MAINTAINER.md` with maintainer-specific workflows
+  - `SETUP_MAINTAINER.md` for one-time environment setup
+  - `docs/GITHUB_ACTIONS.md` with CI/CD pricing and debugging guide
 
 ### Changed
 - `npm install` now automatically sets up Git hooks via postinstall script
 - Git hooks user check is now optional via environment variables (maintainer-only)
 - Hook setup script gracefully skips in CI environments
+- Public documentation no longer mentions maintainer-specific git usernames
 
 ### Fixed
-- GitHub Actions CI no longer fails during `npm ci` (hook setup skipped in CI)
+- GitHub Actions CI failures during `npm ci` (hook setup now skips in CI)
+- Package dependency sync issues by adding `@swc/helpers` as explicit dependency
+- `.env.githooks` added to `.gitignore` for local-only configuration
 
 ## [1.1.0] - 2026-03-15
 
