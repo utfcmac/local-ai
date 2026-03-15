@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Git Hooks**: Automated pre-commit and commit-msg hooks
+  - Pre-commit: Warns about unstaged files and wrong git user
+  - Commit-msg: Validates conventional commit format
+  - Auto-installed on `npm install`
+- **AI Development Guidelines**: Comprehensive workflow documentation
+  - `.clinerules` for Cline/Claude Code
+  - `.cursorrules` for Cursor AI
+  - `AI_DEVELOPMENT.md` with decision trees and patterns
+
+### Changed
+- `npm install` now automatically sets up Git hooks via postinstall script
+
 ## [1.1.0] - 2026-03-15
 
 ### Added
